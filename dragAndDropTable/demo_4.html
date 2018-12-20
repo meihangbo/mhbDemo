@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+    <title>拖动排序 demo</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="generator" content="" />
+    <meta name="author" content="">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no" />
+    <meta http-equiv="x-rim-auto-match" content="none">
+    <style type="text/css">
+       .no-select-text {
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+        }
+        #headTable td {
+            border-bottom: 0px;
+            cursor: all-scroll;
+        }
+         #mainTable td {
+            width: 77px;
+            border-top: 0px;
+        }
+        #info {
+            background:#eee;
+            border: 1px solid #eee;
+            width:100px;
+            height:30px;
+            position:absolute;
+            top:0;
+            left:0;
+            display:none;
+        }
+        .arrow {
+            width: 10px;
+            height: 10px;
+            position: relative;
+            /*display: inline-block;*/
+            /*margin: 10px 10px;*/
+        }
+
+            .arrow:before, .arrow:after {
+                content: '';
+                border-color: transparent;
+                border-style: solid;
+                position: absolute;
+            }
+
+           
+
+        .arrow-up:before {
+            border: none;
+            background-color: red;
+            height: 50%;
+            width: 30%;
+            top: 50%;
+            left: 35%;
+        }
+
+        .arrow-up:after {
+            left: 0;
+            top: -50%;
+            border-width: 5px 5px;
+            border-bottom-color: red;
+        }
+        .arrow-down:before {
+            border: none;
+            background-color: red;
+            height: 50%;
+            width: 30%;
+            top: 0;
+            left: 35%;
+        }
+
+        .arrow-down:after {
+            left: 0;
+            top: 50%;
+            border-width: 5px 5px;
+            border-top-color: red;
+        }
+        #triangle {
+            display:none;
+            position:absolute;
+            top:0px;
+            left:4px;
+        }
+
+    </style>
+	</head>
+  <body>
+    <div id="main">
+<table id="headTable" border="1" cellpadding="0" cellspacing="0" style="width:400px;text-align:center;">
+<tr style="background-color: #E5E5E5">
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+</tr>
+</table>
+<table id="mainTable" border="1" cellpadding="0" cellspacing="0" style="width:400px;text-align:center;">
+<tr>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td><div style="color:red;">ten<span style="display:none">123</span></div>10</td>
+</tr>
+<tr>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td><div style="color:red;">ten<span style="display:none">123</span></div>10</td>
+</tr>
+<tr>
+<td>61</td>
+<td>71</td>
+<td>81</td>
+<td>91</td>
+<td><div style="color:red;">ten<span style="display:none">123</span></div>101</td>
+</tr>
+</table>
+<div id="info"></div>
+<div id="triangle">
+<div class="arrow arrow-down"></div>
+<div class="arrow arrow-up"></div>
+</div>
+</div>
+
+    <script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript">
+      // 阻止事件冒泡
+      function stopDefaultEvent(_e){
+        if(_e && _e.preventDefault){
+          _e.preventDefault();
+        }else{
+          window.event.returnValue = false;
+        }
+        return false;
+      }
+      $(function (){
+        var _tbTR = $('#demoTable').find('tbody>tr'), _currTR = null;
+
+        _tbTR.on('mousedown', function (ev){
+          ev = ev || window.event; //兼容ie浏览器  
+          stopDefaultEvent(ev);
+          var _this = $(this);
+          console.log(_this);
+          console.log(_this[0].rowIndex);
+          
+          //var diffX = e.clientX - drag.offsetLeft; //鼠标点击物体那一刻相对于物体左侧边框的距离=点击时的位置相对于浏览器最左边的距离-物体左边框相对于浏览器最左边的距离  
+          /* var diffY = ev.clientY - _this[0].offsetTop;  
+          _this.css({'background-color': '#eee'});
+          console.log(diffY); */
+          if(typeof _this[0].setCapture!='undefined'){  
+            _this[0].setCapture();  
+          }  
+          document.onmousemove = function (e){
+            var e = e || window.event; //兼容ie浏览器
+            //var left=e.clientX-diffX;  
+            //var _top=e.clientY-diffY;
+            
+            //drag.style.left = left+ 'px';  
+            //_this[0].style.top = top + 'px'; 
+          };
+          //当鼠标弹起来的时候不再移动
+          document.onmouseup = function(e) {   
+            this.onmousemove = null;  
+            this.onmouseup = null; //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）  
+            _this.css({'background-color': '#fff'});
+            //修复低版本ie bug  
+            if(typeof _this[0].releaseCapture!='undefined'){  
+              _this[0].releaseCapture();  
+            }  
+          };
+          
+          
+          
+          /*
+                    document.onmousemove = function(e) {  
+            var e = e || window.event; //兼容ie浏览器  
+            var left=e.clientX-diffX;  
+            var top=e.clientY-diffY;  
+  
+            //控制拖拽物体的范围只能在浏览器视窗内，不允许出现滚动条  
+            if(left<0){  
+                left=0;  
+            }else if(left >window.innerWidth-drag.offsetWidth){  
+                left = window.innerWidth-drag.offsetWidth;  
+            }  
+            if(top<0){  
+                top=0;  
+            }else if(top >window.innerHeight-drag.offsetHeight){  
+                top = window.innerHeight-drag.offsetHeight;  
+            }  
+  
+            //移动时重新得到物体的距离，解决拖动时出现晃动的现象  
+            drag.style.left = left+ 'px';  
+            drag.style.top = top + 'px';  
+        };  
+        document.onmouseup = function(e) { //当鼠标弹起来的时候不再移动  
+            this.onmousemove = null;  
+            this.onmouseup = null; //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）  
+  
+            //修复低版本ie bug  
+            if(typeof drag.releaseCapture!='undefined'){  
+                drag.releaseCapture();  
+            }  
+        }; 
+          */
+          
+        });
+
+      });
+
+      
+    </script>
+	</body>
+</html>

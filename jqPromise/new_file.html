@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+  <script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+  
+  <script type="text/javascript">
+    $(function (){
+      // 一个工厂函数，这个函数返回一个链式实用对象，用返回对象方法来在回调队列中注册多个回调， 调用回调队列，传递任何同步或异步函数的成功或失败状态。
+      var _deferred = $.Deferred();
+      console.log(_deferred);
+
+      /* _deferred.always = function (){
+        console.log('always....');
+      };
+      
+      _deferred.done = function (){
+      	console.log('done....');
+      };
+      
+      _deferred.fail = function (){
+      	console.log('fail....');
+      };
+      
+      _deferred.notify = function (){
+      	console.log('notify....');
+      };
+      
+      _deferred.notifyWith = function (){
+      	console.log('notifyWith....');
+      };
+      
+      _deferred.pipe = function (){
+      	console.log('pipe....');
+      };
+      
+      _deferred.progress = function (){
+      	console.log('progress....');
+      };
+      
+      _deferred.promise = function (){
+      	console.log('promise....');
+      };
+      _deferred.reject = function (){
+      	console.log('reject....');
+      };
+      _deferred.rejectWith = function (){
+      	console.log('rejectWith....');
+      };
+      _deferred.resolve = function (){
+      	console.log('resolve....');
+      };
+      _deferred.resolveWith = function (){
+      	console.log('resolveWith....');
+      };
+      _deferred.state = function (){
+      	console.log('state....');
+      };
+      _deferred.then = function (){
+      	console.log('then....');
+      }; */
+      
+
+      
+      
+      
+      
+      //console.log(_deferred.promise());
+      
+      //console.log('测试内容....');
+      
+      /* _deferred.always();
+      _deferred.done();
+      _deferred.fail();
+      _deferred.notify();
+      _deferred.notifyWith();
+      _deferred.pipe();
+      _deferred.progress();
+      _deferred.promise();
+      _deferred.reject();
+      _deferred.rejectWith();
+      _deferred.resolve();
+      _deferred.resolveWith();
+      _deferred.state();
+      _deferred.then(); */
+      
+      
+      
+      var _list = $.get('https://www.easy-mock.com/mock/5be0f8682d0a09439260058d/yc/base?page=1&limit=10');
+      //console.log(_list);
+      //_deferred.promise();
+      
+      /* _list.done(function (res){
+        console.log(res);
+      }).done(function (res){
+        console.log(res);
+      }); */
+      
+      
+      // when 的使用
+      
+      
+      var wait = function (_deferred){
+        console.log('开始加载...');
+        setTimeout(function (){
+          console.log('开始执行...');
+          _deferred.resolve();      //改变deferred对象执行顺序
+        }, 5000);
+        return _deferred.promise(); // 返回promise 对象
+      };
+      
+      
+      $.when(wait(_deferred)).done(function (){
+        console.log('加载完成....');
+      });
+      
+      _deferred.resolve();
+      
+      
+      
+      console.log('end ....');
+    });
+  </script>
+</html>

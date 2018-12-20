@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="x-rim-auto-match" content="none">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no" />
+    <meta name="author" content="meihangbo">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="generator" content="" />
+    <title> jQuery Deferred </title>
+
+    <!-- <link rel="stylesheet" href="assets/css/comm.css"> -->
+  </head>
+  <body>
+    <!--
+      
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    -->
+    <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(function (){
+        var _def = $.Deferred();
+        var _wait = function (_def){
+          console.log('执行了 _wait 方法...');
+          _def.resolve();   // 改变 _def 对象的运行状态从未完成到已完成,立即触发 done方法.
+        };
+        
+        $.when(_wait(_def)).done(function (){
+          console.log('成功...');
+        }).fail(function (){
+          console.log('失败...');
+        }).then(function (){
+          console.log('成功失败...');
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="x-rim-auto-match" content="none">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no" />
+    <meta name="author" content="meihangbo">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="generator" content="" />
+    <title> jQuery deferred </title>
+
+    <!-- <link rel="stylesheet" href="assets/css/comm.css"> -->
+  </head>
+  <body>
+    <!-- 
+      参考
+        https://www.jianshu.com/p/6da56a12e8b2
+        
+        https://blog.cdswyda.com/post/20160923
+        
+        
+        http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html
+        
+        http://jquery.cuishifeng.cn/jQuery.when.html
+
+        
+      deferred 对象代表将要而完成的某种操作,并提供一些方法,帮助用户使用;
+      它是jQuery对Promise 接口的实现, jQuery 所有AJAX操作函数,默认返回的就是一个deferred对象;
+      $.Deferred() 返回一个对象,如下:
+      always: ƒ ()
+      done: ƒ ()
+      fail: ƒ ()
+      notify: ƒ ()
+      notifyWith: ƒ (a,c)
+      pipe: ƒ ()
+      progress: ƒ ()
+      promise: ƒ (a)
+      reject: ƒ ()
+      rejectWith: ƒ (a,c)
+      resolve: ƒ ()
+      resolveWith: ƒ (a,c)
+      state: ƒ ()
+      then: ƒ ()
+      
+      jQuery就是用Deferred对象来注册一步操作的回调函数;修改并传递异步操作的状态;
+      
+      Deferred状态:
+        pending       表示操作未完成
+        rejected      操作成功
+        resolved      操作失败
+
+                  ----    rejected
+        pending                     状态转换时单向,不可逆;
+                  ----    resolved
+      查看/修改Deferred对象状态:
+        deferred.state()    返回一个字符串表示当前Deferred对象状态.
+      改变状态的方法:
+        var _def = $.Deferred();
+        _def.resolve('您好');
+      绑定回调函数
+        deferred对象在状态改变时,会触发回调函数;
+        done方法指定状态变为resolve时的回调;
+        fail方法指定状态变为rejected时的回调;
+        always方法指定状态为resolve或者rejected都会触发;
+      例如:
+        var _def = $.Deferred();
+        _def.done(function (val){
+          console.log(val);
+        }).resolve("您好! deferred.");
+        链式操作: $.Deferred().done(f1).fail(f2).always(f3);
+      
+      then
+        作用是指定回调函数,可接受三个参数,也就是三个回调函数.
+        第一个参数是 resolve 时调用的回调函数(相当于done方法);
+        第二个参数是 rejected 时调用的回调函数(相当于fail方法);
+        第三个参数是 progress 方法调用的回调函数;
+        
+        deferred.then( doneFilter [, failFilter] [, progressFilter ])
+        
+        返回值
+          在jQuery 1.8 前,then() 只是 done().fail()写法的语法糖,两种写法是等价的;
+          1.8之后, then()返回一个新的 promise 对象, 而 done 返回的是原有的 deferred 对象.
+          如果 then 指定的回调函数有返回值,改返回值会作为参数,传入后边的回调函数;
+        对于返回值的修改
+          利用 then 会修改返回值这个特性, 我们可以再调用其它回调函数之前,对前一步操作返回的至行进处理;
+      Promise对象
+        概念: 是不能改变状态的deferred对象,也就是 deferred 的只读版;
+        或更通俗的理解成, promise 是一个对将要完成的任务的承诺,排除了其它破坏这个承诺的可能性,只能等待承诺方给出的结果.
+        
+        也可通过 promise 对象,为原始的 deferred 对象添加回调函数,查询它的状态,但是无法改变它的状态.
+        也就是说 promise 对象不允许调用 resolve 和 reject 方法;
+        
+        生成 promise 对象
+          deferred 对象的 promise 方法用来生成对应的 promise 对象.
+        辅助方法
+          when 方法
+            接受多个 deferred 对象作为参数, 当它们全部运行成功后, 才调用 resolved状态的回调函数;
+            但只要其中有一个失败,就调用 rejected 状态的回调函数.
+            它相当于将多个非同步操作合并成了一个, 实质上 when 方法为多个 deferred 对象, 返回一个单一的 promise 对象.
+            
+            $.when(
+              $.ajax('url_1'), $.ajax('url_2'), $.ajax('url_3')
+            ).then( successFn, failFn);
+            
+            上边代码表示, 要等到三个ajax操作都结束后才执行then方法指定的回调函数.
+            $.when(
+            	$.ajax('url_1'), $.ajax('url_2'), $.ajax('url_3')
+            ).then( function (res_1, res_2, res_3){
+              // 依次对应上边三个ajax操作的返回结果.
+            });
+            
+            如果when放大的参数不是 deferred 或者 promise 对象,则直接作为回调函数.
+            
+            var _def_4 = $.Deferred();
+            $.when(d, 'world').done(function (s1, s2){
+              console.log(s1);
+              console.log(s2);
+            });
+            _def_4.resolve('Hello ');
+            
+            上面代码中, when的第二个参数是一个字符串,则直接作为回调函数的第二个参数.
+            如果when方法的参数都不是 deferred 或 promise 对象,那么wnen方法的回调函数将立即执行.
+            
+        使用实例
+          wait 方法
+            可以用 deferred 对象写一个 wait 方法,表示等待多少毫秒再执行;
+            
+            $.wait = function ( time ){
+              return $.Deferred(function (dfd){
+                setTimeout(dfd.resolve, time);
+              });
+            }
+            
+            使用如下:
+              $.wait(5000).then(function (){
+                console.log('5秒结束了...');
+              });
+            
+            
+            
+            
+    -->
+
+    <script src="https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(function (){
+        var _def = $.Deferred();
+        console.log(_def);
+        console.log(_def.state());
+        _def.resolve();
+        console.log(_def.state());
+        
+        // 
+        var _promise_1 = $.get('https://gank.io/api/today');
+        console.log(_promise_1);
+        console.log(_promise_1.state());
+        
+        _promise_1.done(function (d){
+          console.log(_promise_1.state());
+          console.log(d);
+        });
+        
+        // 状态
+        console.log(_def.state());
+        // ----------------------------------
+        var _def_1 = $.Deferred();
+        
+        _def_1.then(function (d){
+          console.log('第一个状态: ' + d.state);
+        }, function (d){
+          console.log('第二个状态: ' + d.state);
+        });
+        
+        _def_1.resolve({state: 'success'});
+        _def_1.reject({state: 'err'});
+        
+        var _def_2 = $.Deferred();
+        _def_2.done(function (val){
+        	console.log(val);
+        }).resolve("您好! deferred.");
+        
+        // 返回值例子
+        var _def_3 = $.Deferred();
+        
+        _def_3.done(function (x, y){
+          return x * y;
+        }).done(function (res){
+          console.log('res = ' + res);
+        }).then(function (x, y){
+          return x * y;
+        }).done(function (res){
+          console.log('res = ' + res);
+        }).then(function (x, y){
+          return x * y;
+        }).done(function (res){
+          console.log('res = ' + res);
+        });
+        
+        _def_3.resolve(3, 5);
+        // res = 3 res = 15 res = NaN
+      
+      
+        // promise
+        
+        $('body').toggle('blinds').promise().then(
+          function(){
+            $('body').toggle('blinds');
+            console.log('body toggle blinds');
+          }
+        );
+        
+        
+        var _def_4 = $.Deferred();
+        $.when(_def_4, 'world').done(function (s1, s2){
+        	console.log(s1);
+        	console.log(s2);
+        });
+        _def_4.resolve('Hello ');
+      });
+    </script>
+  </body>
+</html>
