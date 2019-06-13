@@ -59,9 +59,9 @@
     <script type="text/javascript" >
       $(function (){
         $('#yxMain').height(parseInt($(document.body).height()) - 60);
-        $(window).resize(function (){
+        /* $(window).resize(function (){
           setTimeout(function(){$('#yxMain').height(parseInt($(document.body).height()) - 60); }, 100);
-        });
+        }); */
         $('#yxMain').load('pages/page_1.html');
 
         $('.loadMap').on('click', function (){
@@ -131,6 +131,14 @@
         //chartObj.clear();
         chartObj.setOption(__opts);
         chartObj.hideLoading();
+        
+        $(window).resize(function() {
+          setTimeout(function (){
+            $('#yxMain').height(parseInt($(document.body).height()) - 60);
+            console.log('aaaaaaaaaaaaaa');
+            //chartObj.resize();
+           }, 500);
+        });
       }
     </script>
   </body>

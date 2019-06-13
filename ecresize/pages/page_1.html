@@ -1,20 +1,35 @@
-<div class="map-charts" id="mapCharts"> </div>
+<!-- <div class="map-charts" id="mapCharts"> </div> -->
+<div class="map-charts" id=""> </div>
 <script type="text/javascript">
+  function generateId(_prefix){
+    var _tmp = new Date().getTime(), _pre = _prefix||'';
+    if($('#' + _prefix + _tmp).length > 0){
+      _tmp = new Date().getTime();
+    }
+
+    return $.trim(_pre).toString() + _tmp.toString();
+  }
   $(function (){
+    //$(window).off("resize");
     var mapCharts_opt = $.extend(true,{},mapopts,{
       title: {text: 'XXXXX'},
       geo: {map: 'china'}
     });
-    var mapCharts = echarts.init(document.getElementById('mapCharts'));
+    $('.map-charts').attr('id', generateId('chart'));
+    var mapCharts = echarts.init(document.getElementById($('.map-charts').attr('id')));
 
     showChart(mapCharts, mapCharts_opt, function (){
       $.getJSON('json/demo_1.json', function(json, textStatus) {
         setMapData(json, mapCharts, mapCharts_opt);
+        
       });
     });
-
-    $(window).resize(function() {
-      setTimeout(function (){mapCharts.resize(); }, 500);
-    });
+    
+    /* $(window).off("resize").on('resize', function (){
+      setTimeout(function (){ mapCharts.resize(); }, 500);
+    }); */
+    /* $(window).resize(function() {
+      setTimeout(function (){ mapCharts.resize(); }, 500);
+    }); */
   });
 </script>
